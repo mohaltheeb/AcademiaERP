@@ -2,6 +2,15 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Course", {
+	refresh: function (frm) {
+		update_fields(frm);
+	},
+	elective_template: function (frm) {
+		update_fields(frm);
+	},
+	course_type: function (frm) {
+		update_fields(frm);
+	},
 	faculty: function (frm) {
 		var faculty = frm.doc.faculty;
 		frm.set_query("program", function () {
@@ -12,14 +21,6 @@ frappe.ui.form.on("Course", {
 			};
 		});
 		frm.set_value("program", "");
-	},
-	before_save: function (frm) {
-		if (
-			frm.doc.course_type === "University Requirement" ||
-			frm.doc.course_type === "Faculty Requirement"
-		) {
-			frm.set_value("program", "");
-		}
 	},
 	after_save: function (frm) {
 		// التأكد من أن السجل جديد (عند إنشاء السجل تكون قيمة creation مساوية لـ modified)
@@ -41,3 +42,29 @@ frappe.ui.form.on("Course", {
 		}
 	},
 });
+
+function update_fields(frm) {
+	// إذا كان elective_template = 1
+	if (frm.doc.elective_template == 1) {
+		// إذا كان course_type = "University Elective"
+		if (frm.doc.course_type === "University Elective") {
+			frm.set_value("faculty", null);
+			frm.set_value("program", null);
+			frm.set_value("reference_department", null);
+		}
+		// إذا كان course_type = "Faculty Elective"
+		else if (frm.doc.course_type === "Faculty Elective") {
+			frm.set_value("program", null);
+		}
+		// إذا كان course_type = "Program Elective"
+		else if (frm.doc.course_type === "Program Elective") {
+			frm.set_value("faculty", null);
+			frm.set_value("reference_department", null);
+		}
+	}
+	// إذا كان elective_template = 0
+	else if (frm.doc.elective_template == 0) {
+		frm.set_value("program", null);
+		frm.set_value("course_type", null);
+	}
+}
