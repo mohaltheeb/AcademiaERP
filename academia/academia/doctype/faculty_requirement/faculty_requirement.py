@@ -12,8 +12,12 @@ class FacultyRequirement(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from academia.academia.doctype.study_plan_course.study_plan_course import StudyPlanCourse
 		from frappe.types import DF
+
+		from academia.academia.doctype.program_elective_course.program_elective_course import (
+			ProgramElectiveCourse,
+		)
+		from academia.academia.doctype.study_plan_course.study_plan_course import StudyPlanCourse
 
 		academic_degree: DF.Literal[
 			"",
@@ -26,6 +30,7 @@ class FacultyRequirement(Document):
 		active: DF.Check
 		approval_date: DF.Date | None
 		date_of_development: DF.Date
+		elective_courses: DF.Table[ProgramElectiveCourse]
 		faculty: DF.Link
 		implementation_start_academic_year: DF.Link | None
 		table_fgiz: DF.Table[StudyPlanCourse]

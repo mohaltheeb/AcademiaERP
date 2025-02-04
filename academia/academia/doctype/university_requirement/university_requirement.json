@@ -15,7 +15,9 @@
   "date_of_development",
   "approval_date",
   "course_required_tab",
-  "table_rzel"
+  "table_rzel",
+  "course_elective_tab",
+  "elective_courses"
  ],
  "fields": [
   {
@@ -73,11 +75,22 @@
   {
    "fieldname": "section_break_dbag",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "course_elective_tab",
+   "fieldtype": "Tab Break",
+   "label": "Course Elective"
+  },
+  {
+   "fieldname": "elective_courses",
+   "fieldtype": "Table",
+   "label": "Elective Courses",
+   "options": "Program Elective Course"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-29 01:59:19.828234",
+ "modified": "2025-02-05 01:43:54.042855",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "University Requirement",

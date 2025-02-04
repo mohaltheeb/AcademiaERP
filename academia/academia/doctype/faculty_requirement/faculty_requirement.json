@@ -15,7 +15,9 @@
   "date_of_development",
   "approval_date",
   "course_required_tab",
-  "table_fgiz"
+  "table_fgiz",
+  "course_elective_tab",
+  "elective_courses"
  ],
  "fields": [
   {
@@ -81,11 +83,22 @@
    "label": "Faculty",
    "options": "Faculty",
    "reqd": 1
+  },
+  {
+   "fieldname": "course_elective_tab",
+   "fieldtype": "Tab Break",
+   "label": "Course Elective"
+  },
+  {
+   "fieldname": "elective_courses",
+   "fieldtype": "Table",
+   "label": "Elective Courses",
+   "options": "Program Elective Course"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-29 02:02:05.898857",
+ "modified": "2025-02-05 01:44:50.064389",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Faculty Requirement",
