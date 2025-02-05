@@ -15,7 +15,7 @@
   "date_of_development",
   "approval_date",
   "course_required_tab",
-  "table_fgiz",
+  "required_courses",
   "course_elective_tab",
   "elective_courses"
  ],
@@ -72,11 +72,6 @@
    "label": "Course Required"
   },
   {
-   "fieldname": "table_fgiz",
-   "fieldtype": "Table",
-   "options": "Study Plan Course"
-  },
-  {
    "fieldname": "faculty",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -94,11 +89,17 @@
    "fieldtype": "Table",
    "label": "Elective Courses",
    "options": "Program Elective Course"
+  },
+  {
+   "fieldname": "required_courses",
+   "fieldtype": "Table",
+   "label": "Required Courses",
+   "options": "Study Plan Course"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-05 01:44:50.064389",
+ "modified": "2025-02-05 03:52:31.075872",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Faculty Requirement",

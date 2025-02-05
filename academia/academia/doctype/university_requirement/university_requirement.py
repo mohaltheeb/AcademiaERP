@@ -32,7 +32,7 @@ class UniversityRequirement(Document):
 		date_of_development: DF.Date
 		elective_courses: DF.Table[ProgramElectiveCourse]
 		implementation_start_academic_year: DF.Link | None
-		table_rzel: DF.Table[StudyPlanCourse]
+		required_courses: DF.Table[StudyPlanCourse]
 		title: DF.Data
 	# end: auto-generated types
 	pass

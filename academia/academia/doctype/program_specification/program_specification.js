@@ -13,100 +13,110 @@ frappe.ui.form.on("Study Plan Course", {
 	},
 });
 
-// get course required
-
 frappe.ui.form.on("Program Specification", {
 	refresh: function (frm) {
-		// إضافة زر "Get Required Courses"
-		frm.add_custom_button(__("Get Required Courses"), function () {
-			frm.call({
-				method: "get_required_courses",
+		// Import University Courses
+		frm.add_custom_button(__("Import University Courses"), function () {
+			frappe.call({
+				method: "academia.academia.doctype.program_specification.program_specification.get_required_courses",
 				args: {
-					doc: frm.doc,
+					doc: JSON.stringify(frm.doc),
 				},
-				freeze: true,
-				freeze_message: __("Fetching courses..."),
 				callback: function (r) {
 					if (r.message) {
-						// تحديث جدول table_ytno
-						frm.clear_table("table_ytno");
-						r.message.forEach(function (course) {
-							let row = frm.add_child("table_ytno");
-							row.course_code = course.course_code;
-							row.course_name = course.course_name;
-							row.course_type = course.course_type;
-							row.study_level = course.study_level;
-							row.semester = course.semester;
-							row.elective = course.elective;
-							row.source = course.source;
+						let courses = r.message;
+						let added = 0;
+
+						courses.forEach(function (course) {
+							if (course.source === "required") {
+								// التحقق من عدم وجود المادة مسبقاً في جدول المواد الإلزامية (table_ytno)
+								let exists = frm.doc.table_ytno.some(function (row) {
+									return row.course_code === course.course_code;
+								});
+								if (!exists) {
+									frm.add_child("table_ytno", {
+										course_code: course.course_code,
+										course_name: course.course_name,
+										course_type: course.course_type,
+										study_level: course.study_level,
+										semester: course.semester,
+									});
+									added++;
+								}
+							} else if (course.source === "elective") {
+								// التحقق من عدم وجود المادة مسبقاً في جدول المواد الاختيارية (university_elective_course)
+								let exists = frm.doc.university_elective_course.some(function (
+									row
+								) {
+									return row.course_code === course.course_code;
+								});
+								if (!exists) {
+									frm.add_child("university_elective_course", {
+										course_code: course.course_code,
+										course_name: course.course_name,
+									});
+									added++;
+								}
+							}
 						});
+
 						frm.refresh_field("table_ytno");
-						frappe.msgprint(__("Courses fetched successfully!"));
+						frm.refresh_field("university_elective_course");
+						frappe.msgprint(added + " courses imported successfully.");
 					}
 				},
 			});
-		}).addClass("btn-primary");
+		});
+
+		// Import Faculty Courses
+		frm.add_custom_button(__("Import Faculty Courses"), function () {
+			frappe.call({
+				method: "academia.academia.doctype.program_specification.program_specification.get_required_faculty_courses",
+				args: {
+					doc: JSON.stringify(frm.doc),
+				},
+				callback: function (r) {
+					if (r.message) {
+						let coursess = r.message;
+						let added = 0;
+
+						coursess.forEach(function (course) {
+							if (course.source === "required") {
+								// التحقق من عدم وجود المادة مسبقاً في جدول المواد الإلزامية (table_ytno)
+								let exists = frm.doc.table_ytno.some(function (row) {
+									return row.course_code === course.course_code;
+								});
+								if (!exists) {
+									frm.add_child("table_ytno", {
+										course_code: course.course_code,
+										course_name: course.course_name,
+										course_type: course.course_type,
+										study_level: course.study_level,
+										semester: course.semester,
+									});
+									added++;
+								}
+							} else if (course.source === "elective") {
+								// التحقق من عدم وجود المادة مسبقاً في جدول المواد الاختيارية (faculty_elective_course)
+								let exists = frm.doc.faculty_elective_course.some(function (row) {
+									return row.course_code === course.course_code;
+								});
+								if (!exists) {
+									frm.add_child("faculty_elective_course", {
+										course_code: course.course_code,
+										course_name: course.course_name,
+									});
+									added++;
+								}
+							}
+						});
+
+						frm.refresh_field("table_ytno");
+						frm.refresh_field("faculty_elective_course");
+						frappe.msgprint(added + " courses imported successfully.");
+					}
+				},
+			});
+		});
 	},
 });
-
-// second try
-
-// frappe.ui.form.on("Program Specification", {
-//     refresh: function (frm) {
-//         // إضافة زر "Get Required Courses"
-//         frm.add_custom_button(__('Get Required Courses'), function () {
-//             frm.call({
-//                 method: "get_required_courses",
-//                 args: {
-//                     doc: frm.doc
-//                 },
-//                 freeze: true,
-//                 freeze_message: __("Fetching courses..."),
-//                 callback: function (r) {
-//                     if (r.message) {
-//                         // تحقق من المواد الموجودة في الجدول قبل إضافة المواد الجديدة
-//                         let existing_courses = frm.doc.table_ytno.map(row => row.course_code);
-//                         let new_courses = r.message.filter(course => !existing_courses.includes(course.course_code));
-
-//                         if (new_courses.length > 0) {
-//                             // إضافة المواد المتبقية للجدول
-//                             new_courses.forEach(function (course) {
-//                                 let row = frm.add_child("table_ytno");
-//                                 row.course_code = course.course_code;
-//                                 row.course_name = course.course_name;
-//                                 row.course_type = course.course_type;
-//                                 row.study_level = course.study_level;
-//                                 row.semester = course.semester;
-//                                 row.elective = course.elective;
-//                                 row.source = course.source;
-//                             });
-//                             frm.refresh_field("table_ytno");
-//                             frappe.msgprint(__("Courses added successfully!"));
-//                         } else {
-//                             frappe.msgprint(__("All required courses are already present in the study plan."));
-//                         }
-//                     }
-//                 }
-//             });
-//         }).addClass('btn-primary');
-//     },
-
-//     // التحقق قبل الحفظ
-//     before_save: function (frm) {
-//         frm.call({
-//             method: "validate_courses_in_plan",
-//             args: {
-//                 doc: frm.doc
-//             },
-//             freeze: true,
-//             freeze_message: __("Validating courses..."),
-//             callback: function (r) {
-//                 if (r.message) {
-//                     // إذا كانت المواد ناقصة سيتم عرض رسالة للمستخدم.
-//                     frappe.msgprint(r.message);
-//                     frappe.validated = false;  // منع الحفظ
-//                 }
-//             }
-//         });
-//     }
-// });

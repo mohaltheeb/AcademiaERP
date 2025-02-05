@@ -15,7 +15,7 @@
   "date_of_development",
   "approval_date",
   "course_required_tab",
-  "table_rzel",
+  "required_courses",
   "course_elective_tab",
   "elective_courses"
  ],
@@ -62,11 +62,6 @@
    "label": "Course Required"
   },
   {
-   "fieldname": "table_rzel",
-   "fieldtype": "Table",
-   "options": "Study Plan Course"
-  },
-  {
    "default": "0",
    "fieldname": "active",
    "fieldtype": "Check",
@@ -86,11 +81,17 @@
    "fieldtype": "Table",
    "label": "Elective Courses",
    "options": "Program Elective Course"
+  },
+  {
+   "fieldname": "required_courses",
+   "fieldtype": "Table",
+   "label": "Required Courses",
+   "options": "Study Plan Course"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-05 01:43:54.042855",
+ "modified": "2025-02-05 02:04:52.630754",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "University Requirement",

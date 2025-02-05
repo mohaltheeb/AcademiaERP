@@ -33,7 +33,7 @@ class FacultyRequirement(Document):
 		elective_courses: DF.Table[ProgramElectiveCourse]
 		faculty: DF.Link
 		implementation_start_academic_year: DF.Link | None
-		table_fgiz: DF.Table[StudyPlanCourse]
+		required_courses: DF.Table[StudyPlanCourse]
 		title: DF.Data
 	# end: auto-generated types
 	pass
