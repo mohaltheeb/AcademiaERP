@@ -16,6 +16,7 @@ class StudentBatch(Document):
 
 		batch_name: DF.Data
 		current_level: DF.Link | None
+		current_semester: DF.Link | None
 		faculty: DF.Link
 		program: DF.Link
 		program_specification: DF.Link

@@ -12,7 +12,8 @@
   "column_break_apun",
   "program_specification",
   "status",
-  "current_level"
+  "current_level",
+  "current_semester"
  ],
  "fields": [
   {
@@ -61,11 +62,17 @@
    "label": "Faculty",
    "options": "Faculty",
    "reqd": 1
+  },
+  {
+   "fieldname": "current_semester",
+   "fieldtype": "Link",
+   "label": "Current Semester",
+   "options": "Semester"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-04 18:25:17.290028",
+ "modified": "2025-02-08 04:11:27.829045",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Student Batch",
