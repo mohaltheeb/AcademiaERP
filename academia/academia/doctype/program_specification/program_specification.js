@@ -118,5 +118,56 @@ frappe.ui.form.on("Program Specification", {
 				},
 			});
 		});
+
+		// Import Program Courses
+		frm.add_custom_button(__("Import Program Courses"), function () {
+			frappe.call({
+				method: "academia.academia.doctype.program_specification.program_specification.get_required_Program_courses",
+				args: {
+					doc: JSON.stringify(frm.doc),
+				},
+				callback: function (r) {
+					if (r.message) {
+						let coursesss = r.message;
+						let added = 0;
+
+						coursesss.forEach(function (course) {
+							if (course.source === "required") {
+								// التحقق من عدم وجود المادة مسبقاً في جدول المواد الإلزامية (table_ytno)
+								let exists = frm.doc.table_ytno.some(function (row) {
+									return row.course_code === course.course_code;
+								});
+								if (!exists) {
+									frm.add_child("table_ytno", {
+										course_code: course.course_code,
+										course_name: course.course_name,
+										course_type: course.course_type,
+										study_level: course.study_level,
+										semester: course.semester,
+									});
+									added++;
+								}
+							} else if (course.source === "elective") {
+								// التحقق من عدم وجود المادة مسبقاً في جدول المواد الاختيارية (program_elective_course)
+								let exists = frm.doc.program_elective_course.some(function (row) {
+									return row.course_code === course.course_code;
+								});
+								if (!exists) {
+									frm.add_child("program_elective_course", {
+										course_code: course.course_code,
+										course_name: course.course_name,
+									});
+									added++;
+								}
+							}
+						});
+
+						frm.refresh_field("table_ytno");
+						frm.refresh_field("program_elective_course");
+						frappe.msgprint(added + " courses imported successfully.");
+					}
+				},
+			});
+		});
 	},
 });

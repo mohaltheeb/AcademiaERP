@@ -16,17 +16,18 @@
   "academic_degree",
   "date_of_starting_the_program",
   "course_required_section",
+  "academic_system",
   "university_requirements",
   "column_break_sjay",
   "faculty_requirements",
+  "program_requirements",
   "section_break_koic",
   "total_hours_required_to_award_degree",
   "total_elective_hours",
-  "course_language",
   "implementation_start_academic_year",
   "column_break_zw7h",
+  "course_language",
   "delivery_mode",
-  "academic_system",
   "date_of_programe_development",
   "section_break_mzlt",
   "approval_date",
@@ -51,7 +52,8 @@
   "research_tab",
   "minimum_course_average_to_start_research",
   "minimum_research_period",
-  "maximum_research_period"
+  "maximum_research_period",
+  "amended_from"
  ],
  "fields": [
   {
@@ -111,6 +113,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "approval_date",
    "fieldtype": "Date",
    "label": "Approval Date"
@@ -120,6 +123,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "file",
    "fieldtype": "Attach",
    "label": "File"
@@ -245,6 +249,7 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "implementation_start_academic_year",
    "fieldtype": "Link",
    "label": "Implementation Start (Academic Year)",
@@ -280,6 +285,7 @@
    "fieldname": "university_requirements",
    "fieldtype": "Link",
    "label": "University Requirements",
+   "link_filters": "[[\"University Requirement\",\"active\",\"=\",1]]",
    "options": "University Requirement",
    "reqd": 1
   },
@@ -291,6 +297,7 @@
    "fieldname": "faculty_requirements",
    "fieldtype": "Link",
    "label": "Faculty Requirements ",
+   "link_filters": "[[\"Faculty Requirement\",\"active\",\"=\",1]]",
    "options": "Faculty Requirement",
    "reqd": 1
   },
@@ -341,11 +348,30 @@
    "fieldtype": "Table",
    "label": "Program Elective Course",
    "options": "Program Elective Course"
+  },
+  {
+   "fieldname": "program_requirements",
+   "fieldtype": "Link",
+   "label": "Program Requirements",
+   "link_filters": "[[\"Program Requirement\",\"active\",\"=\",1]]",
+   "options": "Program Requirement",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Program Specification",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-01-29 01:45:22.361239",
+ "modified": "2025-02-08 03:34:17.764202",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Program Specification",

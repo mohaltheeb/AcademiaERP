@@ -31,6 +31,7 @@ class ProgramSpecification(Document):
 		abbr: DF.ReadOnly
 		academic_degree: DF.ReadOnly
 		academic_system: DF.Literal["", "Semester System", "Credit Hours System", "Annual System"]
+		amended_from: DF.Link | None
 		approval_date: DF.Date | None
 		course_language: DF.TableMultiSelect[CourseLanguage]
 		courses: DF.Check
@@ -49,6 +50,7 @@ class ProgramSpecification(Document):
 		program_elective_course: DF.Table[ProgramElectiveCourse]
 		program_name: DF.Link
 		program_name_english: DF.ReadOnly
+		program_requirements: DF.Link
 		research_or_thesis: DF.Check
 		table_omcu: DF.Table[CreditHoursCourse]
 		table_ytno: DF.Table[StudyPlanCourse]
@@ -59,6 +61,7 @@ class ProgramSpecification(Document):
 	# end: auto-generated types
 
 
+# Funcation to get University Requirement Course
 @frappe.whitelist()
 def get_required_courses(doc):
 	"""
@@ -106,6 +109,7 @@ def get_required_courses(doc):
 	return courses
 
 
+# Funcation to get Faculty Requirement Course
 @frappe.whitelist()
 def get_required_faculty_courses(doc):
 	"""
@@ -119,12 +123,12 @@ def get_required_faculty_courses(doc):
 
 	coursess = []
 
-	# جلب سجل University Requirement
-	university_requirement = frappe.get_doc("Faculty Requirement", doc.get("faculty_requirements"))
+	# جلب سجل Faculty Requirement
+	faculty_requirement = frappe.get_doc("Faculty Requirement", doc.get("faculty_requirements"))
 
 	# جلب المواد من جدول المواد الإلزامية (required_courses)
-	if university_requirement.get("required_courses"):
-		for row in university_requirement.get("required_courses"):
+	if faculty_requirement.get("required_courses"):
+		for row in faculty_requirement.get("required_courses"):
 			coursess.append(
 				{
 					"course_code": row.get("course_code"),
@@ -137,8 +141,8 @@ def get_required_faculty_courses(doc):
 			)
 
 	# جلب المواد من جدول المواد الاختيارية (elective_courses)
-	if university_requirement.get("elective_courses"):
-		for row in university_requirement.get("elective_courses"):
+	if faculty_requirement.get("elective_courses"):
+		for row in faculty_requirement.get("elective_courses"):
 			coursess.append(
 				{
 					"course_code": row.get("course_code"),
@@ -148,6 +152,54 @@ def get_required_faculty_courses(doc):
 			)
 
 	if not coursess:
-		frappe.throw(_("No courses found in the selected University Requirements."))
+		frappe.throw(_("No courses found in the selected Faculty Requirements."))
 
 	return coursess
+
+
+# Funcation to get Program Requirement Course
+@frappe.whitelist()
+def get_required_Program_courses(doc):
+	"""
+	Fetches courses from the selected Program Requirement document.
+	It collects courses from both child tables: course_required_tab and course_elective_tab,
+	and returns a list of courses with their details.
+	"""
+	doc = frappe.parse_json(doc)
+	if not doc.get("program_requirements"):
+		frappe.throw(_("Please select Program Requirements before fetching courses."))
+
+	coursesss = []
+
+	# جلب سجل University Requirement
+	program_requirement = frappe.get_doc("Program Requirement", doc.get("program_requirements"))
+
+	# جلب المواد من جدول المواد الإلزامية (required_courses)
+	if program_requirement.get("required_courses"):
+		for row in program_requirement.get("required_courses"):
+			coursesss.append(
+				{
+					"course_code": row.get("course_code"),
+					"course_name": row.get("course_name"),
+					"course_type": row.get("course_type"),
+					"study_level": row.get("study_level"),
+					"semester": row.get("semester"),
+					"source": "required",
+				}
+			)
+
+	# جلب المواد من جدول المواد الاختيارية (elective_courses)
+	if program_requirement.get("elective_courses"):
+		for row in program_requirement.get("elective_courses"):
+			coursesss.append(
+				{
+					"course_code": row.get("course_code"),
+					"course_name": row.get("course_name"),
+					"source": "elective",
+				}
+			)
+
+	if not coursesss:
+		frappe.throw(_("No courses found in the selected Prpgram Requirements."))
+
+	return coursesss
