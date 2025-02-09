@@ -21,6 +21,7 @@
   "current_level",
   "column_break_pvou",
   "program_specification",
+  "current_semester",
   "section_break_anao",
   "get_courses",
   "courses",
@@ -95,7 +96,7 @@
    "fieldtype": "Link",
    "label": "Specific Program",
    "mandatory_depends_on": "eval:doc.academic_program == \"Specific Program\";",
-   "options": "Program Specification"
+   "options": "Academic Program"
   },
   {
    "fieldname": "column_break_hrki",
@@ -149,12 +150,20 @@
   {
    "fieldname": "column_break_kxum",
    "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "student_batch",
+   "fetch_from": "student_batch.current_semester",
+   "fieldname": "current_semester",
+   "fieldtype": "Link",
+   "label": "Current Semester",
+   "options": "Semester"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-23 20:42:34.411455",
+ "modified": "2025-02-09 21:35:15.458491",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Course Study Tool",

@@ -2,7 +2,7 @@
 exclude: "node_modules|.git"
 
 # Specify the default stages for the hooks to run
-default_stages: [commit]
+default_stages: [pre-commit]
 fail_fast: false
 
 # Repository for general utility hooks
