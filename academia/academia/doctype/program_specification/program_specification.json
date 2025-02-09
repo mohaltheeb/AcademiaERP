@@ -138,6 +138,7 @@
    "fieldtype": "Table",
    "label": "Courses",
    "options": "Study Plan Course",
+   "read_only": 1,
    "read_only_depends_on": "eval:doc.research_or_thesis == 1 && doc.courses == 0;"
   },
   {
@@ -325,7 +326,8 @@
    "fieldname": "university_elective_course",
    "fieldtype": "Table",
    "label": "University Elective Course",
-   "options": "Program Elective Course"
+   "options": "Program Elective Course",
+   "read_only": 1
   },
   {
    "fieldname": "faculty_elective_course_section",
@@ -336,7 +338,8 @@
    "fieldname": "faculty_elective_course",
    "fieldtype": "Table",
    "label": "Faculty Elective Course",
-   "options": "Program Elective Course"
+   "options": "Program Elective Course",
+   "read_only": 1
   },
   {
    "fieldname": "program_elective_course_section",
@@ -347,7 +350,8 @@
    "fieldname": "program_elective_course",
    "fieldtype": "Table",
    "label": "Program Elective Course",
-   "options": "Program Elective Course"
+   "options": "Program Elective Course",
+   "read_only": 1
   },
   {
    "fieldname": "program_requirements",
@@ -371,7 +375,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-08 03:34:17.764202",
+ "modified": "2025-02-09 23:45:15.489594",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Program Specification",

@@ -19,14 +19,13 @@ class ProgramSpecification(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from academia.academia.doctype.course_language.course_language import CourseLanguage
 		from academia.academia.doctype.credit_hours_course.credit_hours_course import CreditHoursCourse
 		from academia.academia.doctype.program_elective_course.program_elective_course import (
 			ProgramElectiveCourse,
 		)
 		from academia.academia.doctype.study_plan_course.study_plan_course import StudyPlanCourse
+		from frappe.types import DF
 
 		abbr: DF.ReadOnly
 		academic_degree: DF.ReadOnly
