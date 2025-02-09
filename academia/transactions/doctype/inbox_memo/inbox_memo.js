@@ -1,6 +1,7 @@
 // Copyright (c) 2024, SanU and contributors
 // For license information, please see license.txt
 let delegated_employees_emails = []
+let mustInclude = [];
 
 function add_approve_action(frm) {
 	cur_frm.page.add_action_item(__("Approve"), function () {
@@ -98,6 +99,9 @@ function add_redirect_action(frm) {
 }
 
 frappe.ui.form.on("Inbox Memo", {
+	start_from: function (frm) {
+		update_must_include(frm)
+	},
 	before_submit: function (frm) {
 		current_action_maker = frm.doc.using_path_template ?frm.doc.recipients_path[0].recipient_email : frm.doc.recipients[0].recipient_email;
 		frm.set_value("current_action_maker", current_action_maker);
@@ -121,7 +125,24 @@ frappe.ui.form.on("Inbox Memo", {
 				},
 			},
 			callback: function (response) {
+
 				if (response.message) {
+					frappe.call({
+						method: "frappe.share.add",
+						args: {
+							doctype: "Transaction New",
+							name: frm.doc.transaction_reference,
+							user: current_action_maker,
+							read: 1,
+							write: 1,
+							share: 1,
+							submit: 1
+						},
+						callback: function() {
+							// After permissions are set, now save the document
+							console.log("Share permissions added to transaction")
+						}
+					});
 					// frappe.db.set_value(inbox_memo , 'current_action_maker')
 					console.log(response.message);
 				}
@@ -189,6 +210,33 @@ frappe.ui.form.on("Inbox Memo", {
 	},
 
 	refresh(frm) {
+		if (frm.doc.docstatus != 0) {
+			frm.fields_dict.get_recipients.$wrapper.hide();
+			frm.fields_dict.get_recipients.input.disabled = true;
+			frm.fields_dict.clear_recipients.$wrapper.hide();
+			frm.fields_dict.clear_recipients.input.disabled = true;
+		}
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Employee",
+				filters: { user_id: frappe.session.user },
+				fieldname: "company",
+			},
+			callback: function (response) {
+				if (response.message) {
+					let current_user_company = response.message.company;
+					frm.set_query("start_from", function() {
+						return {
+							filters: {
+								company: ["!=", current_user_company],
+								user_id: ["!=", ""]
+							}
+						};
+					});
+				}
+			}
+		});
 		if (
 			frm.doc.current_action_maker == frappe.session.user && frm.doc.docstatus == 1 &&
 			(frm.doc.is_received || frm.doc.full_electronic)
@@ -266,21 +314,21 @@ frappe.ui.form.on("Inbox Memo", {
 		if (transaction_reference && frm.is_new()) {
 			frm.set_value("transaction_reference", transaction_reference);
 		}
-		if (!frm.doc.start_from) {
-			frappe.call({
-				method: "frappe.client.get_value",
-				args: {
-					doctype: "Employee",
-					filters: { user_id: frappe.session.user },
-					fieldname: "name",
-				},
-				callback: function (response) {
-					if (response.message && frm.is_new()) {
-						frm.set_value("start_from", response.message.name);
-					}
-				},
-			});
-		}
+		// if (!frm.doc.start_from) {
+		// 	frappe.call({
+		// 		method: "frappe.client.get_value",
+		// 		args: {
+		// 			doctype: "Employee",
+		// 			filters: { user_id: frappe.session.user },
+		// 			fieldname: "name",
+		// 		},
+		// 		callback: function (response) {
+		// 			if (response.message && frm.is_new()) {
+		// 				frm.set_value("start_from", response.message.name);
+		// 			}
+		// 		},
+		// 	});
+		// }
 	},
 
 	inbox_from: function (frm) {
@@ -308,24 +356,12 @@ frappe.ui.form.on("Inbox Memo", {
 	},
 
 	get_recipients: function (frm) {
+		update_must_include(frm);
 		let setters = {
 			employee_name: null,
 			department: null,
 			designation: null,
 		};
-		if (frm.doc.type == "External") {
-			setters.company = null;
-			frappe.call({
-				method: "academia.transactions.doctype.inbox_memo.inbox_memo.get_all_employees_except_start_with_company",
-				args: {
-					start_with_company: frm.doc.start_with_company,
-				},
-				callback: function (response) {
-					mustInclude = response.message;
-				},
-			});
-		} else if (frm.doc.type == "Internal") {
-		}
 		new frappe.ui.form.MultiSelectDialog({
 			doctype: "Employee",
 			target: frm,
@@ -336,6 +372,7 @@ frappe.ui.form.on("Inbox Memo", {
 			get_query() {
 				let filters = {
 					docstatus: ["!=", 2],
+					user_id: ["in", mustInclude],
 				};
 				if (frm.doc.type == "External") {
 					filters.company = this.setters.company || "";
@@ -429,8 +466,19 @@ frappe.ui.form.on("Inbox Memo", {
 							frappe.model.set_value(child.doctype, child.name, 'recipient_department', item.recipient_department);
 							frappe.model.set_value(child.doctype, child.name, 'recipient_designation', item.recipient_designation);
 						});
+						setTimeout(function () {
+							// DO NOT DELETE THIS: This is a workaround to open and close the first row of the recipients grid so that filtering works
+							let grid = frm.fields_dict["recipients_path"].grid;
+							if (grid.grid_rows.length > 0) {
+								let first_row = grid.grid_rows[0];
+								first_row.toggle_view(true); // Open the first row
+								setTimeout(function () {
+									first_row.toggle_view(false); // Close the first row
+								}, 0);
+							}
+						}, 0);
 		
-						frm.refresh_field('recipients_path');
+						frm.refresh_fields('recipients_path');
 					}
 				}
 			});
@@ -464,4 +512,62 @@ function update_related_actions_html(frm) {
 			}
 		},
 	});
+}
+
+frappe.ui.form.on("Recipient Path", {
+	form_render: function (frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		recipient_designation = row.recipient_designation;
+		row.recipient_designation = recipient_designation;
+		recipient_company = row.recipient_company;
+		row.recipient_company = recipient_company;
+		recipient_department = row.recipient_department;
+		row.recipient_department = recipient_department;
+		// frappe.msgprint(
+		// 	"Handler Triggered - Recipient Designation Changed: " + row.recipient_designation
+		// );
+		frm.refresh_field("recipients_path");
+
+		frm.fields_dict["recipients_path"].grid.get_field("recipient").get_query = function () {
+			return {
+				filters: {
+					designation: recipient_designation,
+					department: recipient_department,
+					company: recipient_company
+				},
+			};
+		};
+	},
+});
+
+function update_must_include(frm) {
+	if (frm.doc.start_from) {
+		frm.clear_table("recipients");
+		frm.refresh_field("recipients");
+
+		frappe.call({
+			method: "academia.transactions.api.fetch_allowed_employees",
+			callback: function(r) {
+				if (r.message) {
+					let employee_names = r.message;
+					frappe.call({
+						method: "frappe.client.get_list",
+						args: {
+							doctype: "Employee",
+							filters: { name: ["in", employee_names] },
+							fields: ["user_id"]
+						},
+						callback: function(response) {
+							if (response.message) {
+								console.log("Hello")
+								mustInclude = response.message.map(employee => employee.user_id);
+								console.log("Must Include: ", mustInclude);
+							}
+						}
+					});
+				}
+			}
+		});
+		// console.log("Must Include: ", mustInclude);
+	}
 }

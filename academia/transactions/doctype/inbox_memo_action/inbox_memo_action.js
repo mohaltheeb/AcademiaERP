@@ -51,8 +51,22 @@ frappe.ui.form.on("Inbox Memo Action", {
 											inbox_memo_action_doc.recipients[0].recipient_email
 										)
 										.then(() => {
-											frappe.set_route("Form", "Inbox Memo", frm.doc.inbox_memo);
-											location.reload();
+											frappe.call({
+												method: "frappe.share.add",
+												args: {
+													doctype: "Transaction New",
+													name: transaction_reference,
+													user: inbox_memo_action_doc.recipients[0].recipient_email,
+													read: 1,
+													write: 1,
+													share: 1,
+													submit: 1
+												},
+												callback: function() {
+													frappe.set_route("Form", "Inbox Memo", frm.doc.inbox_memo);
+													location.reload();
+												}
+											});
 										});
 								} else {
 									frappe.msgprint("Transaction reference not found.");
@@ -61,8 +75,8 @@ frappe.ui.form.on("Inbox Memo Action", {
 						});
 					})
 					// back to Transaction after save the transaction action
-					frappe.set_route("Form", "Inbox Memo", frm.doc.inbox_memo);
-					location.reload();
+					// frappe.set_route("Form", "Inbox Memo", frm.doc.inbox_memo);
+					// location.reload();
 				}
 			},
 		});
@@ -97,6 +111,7 @@ frappe.ui.form.on("Inbox Memo Action", {
 					if (!doc.full_electronic) {
 						// Hide the "Submit" button
 						frm.page.wrapper.find('.btn-primary[data-label="Submit"]').hide();
+						frm.page.wrapper.find('.btn-primary[data-label="%D8%AA%D8%B3%D8%AC%D9%8A%D9%84"]').hide();
 
 						// Add a custom submit button
 						if (!frm.is_new() && frm.doc.docstatus === 0) {

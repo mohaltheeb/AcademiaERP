@@ -5,6 +5,7 @@ import json
 
 import frappe
 from frappe.model.document import Document
+from frappe import _
 
 
 class OutboxMemo(Document):
@@ -392,9 +393,24 @@ def create_new_outbox_memo_action(user_id, outbox_memo, type, details, created_b
 						next_recipient_email = outbox_memo_doc.recipients_path[i + 1].recipient_email if i < len(outbox_memo_doc.recipients_path) else None
 						outbox_memo_doc.current_action_maker = next_recipient_email
 						outbox_memo_doc.save(ignore_permissions=True)
-						permissions = {"read": 1, "write": 1, "share": 1, "submit": 1}
-						permissions_str = json.dumps(permissions)
-						update_share_permissions(outbox_memo, next_recipient_email, permissions_str)
+						frappe.share.add(
+							doctype="Outbox Memo", 
+							name=outbox_memo_doc.name, 
+							user=next_recipient_email, 
+							read=1, 
+							write=1, 
+							share=1, 
+							submit=1
+						)
+						frappe.share.add(
+							doctype="Transaction New", 
+							name=outbox_memo_doc.transaction_reference, 
+							user=next_recipient_email, 
+							read=1, 
+							write=1, 
+							share=1, 
+							submit=1
+						)
 						break
 			elif type == "Rejected":
 				outbox_memo_doc.status = "Rejected"
@@ -547,7 +563,7 @@ def get_middle_man_list(doctype, txt, searchfield, start, page_len, filters):
             SELECT name, employee_name
             FROM `tabEmployee`
             WHERE (name LIKE %(txt)s OR employee_name LIKE %(txt)s)
-            AND designation = 'Accountant'
+            AND designation = 'مراسل'
             LIMIT %(start)s, %(page_len)s
         """,
 			{"txt": f"%{txt}%", "start": start, "page_len": page_len},
@@ -555,12 +571,11 @@ def get_middle_man_list(doctype, txt, searchfield, start, page_len, filters):
 
 		# Ensure the list is not empty
 		if not employees:
-			frappe.throw(_("No employees found"))
+			frappe.log_error("No employees found")
 
 		return employees
 	except Exception as e:
 		frappe.log_error(message=str(e), title="Error in get_employee_list")
-		frappe.throw(_("An error occurred while fetching the employee list"))
 
 
 @frappe.whitelist()
