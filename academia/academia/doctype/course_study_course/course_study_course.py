@@ -16,6 +16,7 @@ class CourseStudyCourse(Document):
 
 		academic_term: DF.Data | None
 		academic_year: DF.Data | None
+		batch: DF.Link | None
 		course_code: DF.Data
 		course_name: DF.Data | None
 		course_type: DF.Data | None
@@ -24,5 +25,6 @@ class CourseStudyCourse(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		program: DF.Data | None
+		study_level: DF.Link | None
 	# end: auto-generated types
 	pass

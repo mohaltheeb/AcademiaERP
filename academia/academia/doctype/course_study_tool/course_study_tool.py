@@ -171,6 +171,13 @@ class CourseStudyTool(Document):
 							child_data["batch"] = self.student_batch
 							child_table_data.append(child_data)
 
+					filterd_data_by_current_level = [
+						d
+						for d in child_table_data
+						if d.get("study_level") == self.current_level
+						and d.get("semester") == self.current_semester
+					]
+					child_table_data = filterd_data_by_current_level
 			else:
 				frappe.throw(_("Mandatory field - Student Batch"))
 		else:
@@ -226,6 +233,7 @@ class CourseStudyTool(Document):
 							course_study.level = cour.study_level
 							course_study.course_type = hour_table["hour_type"]
 							course_study.hours = hour_table["hours"]
+							course_study.lab_type = hour_table["lab_type"]
 							course_study.suitable_env = hour_table["suitable_env"]
 							course_study.save()
 

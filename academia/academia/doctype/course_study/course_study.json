@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{course_name}-{course_code}",
+ "autoname": "format:{course_name} - {course_code}",
  "creation": "2024-05-03 20:04:24.958531",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -150,7 +150,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-31 01:56:10.761747",
+ "modified": "2025-02-10 01:45:41.482760",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Course Study",
