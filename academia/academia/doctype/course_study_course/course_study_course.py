@@ -25,6 +25,7 @@ class CourseStudyCourse(Document):
 		parentfield: DF.Data
 		parenttype: DF.Data
 		program: DF.Data | None
+		semester: DF.Link | None
 		study_level: DF.Link | None
 	# end: auto-generated types
 	pass
