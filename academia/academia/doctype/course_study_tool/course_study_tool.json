@@ -16,6 +16,8 @@
   "column_break_hrki",
   "level",
   "specific_level",
+  "semester",
+  "specific_semester",
   "section_break_hwzx",
   "student_batch",
   "current_level",
@@ -39,6 +41,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Student Batch",
+   "link_filters": "[[\"Student Batch\",\"status\",\"=\",\"Continue\"]]",
    "mandatory_depends_on": "eval:doc.based_on == \"Batch\";",
    "options": "Student Batch"
   },
@@ -158,12 +161,26 @@
    "fieldtype": "Link",
    "label": "Current Semester",
    "options": "Semester"
+  },
+  {
+   "depends_on": "level",
+   "fieldname": "semester",
+   "fieldtype": "Select",
+   "label": "Semester",
+   "options": "\nAll Semester\nSpecific Semester"
+  },
+  {
+   "depends_on": "eval:doc.semester == \"Specific Semester\";",
+   "fieldname": "specific_semester",
+   "fieldtype": "Link",
+   "label": "Specific Semester",
+   "options": "Semester"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-02-09 21:35:15.458491",
+ "modified": "2025-02-11 02:46:10.331659",
  "modified_by": "Administrator",
  "module": "Academia",
  "name": "Course Study Tool",
